@@ -1,12 +1,15 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/dbconnection");
 
-const application = sequelize.define(
+// get the connection from the config
+// Models are used to talk with the database table
+const Application = sequelize.define(
   "Application",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
       allowNull: false,
     },
     name: {
@@ -36,9 +39,9 @@ const application = sequelize.define(
     },
   },
   {
-    tableName: "applications",
-    timestamps: true,
+    tableName: "applications", // sets the table's name
+    timestamps: true, // auto-creates createdAt, updatedAt
   }
 );
 
-module.exports = application;
+module.exports = Application;
