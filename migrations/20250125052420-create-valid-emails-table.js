@@ -15,6 +15,16 @@ module.exports = {
         unique: true,
         allowNull: false,
       },
+      createdAt: {
+        type: Sequelize.NOW,
+        allowNull: false,
+        default: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.NOW,
+        allowNull: false,
+        default: Sequelize.NOW,
+      },
     });
   },
 
