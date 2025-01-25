@@ -10,7 +10,7 @@ exports.createApplication = async (req, res) => {
     });
   } catch (err) {
     console.error("Error creating your application", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -18,13 +18,20 @@ exports.getApplication = async (req, res) => {
   const id = req.params.id;
   try {
     const application = await Application.findByPk(id);
+
+    if (!application) {
+      const error = new Error(`No application found with ID: ${id}`);
+      error.statusCode = 404;
+      throw error;
+    }
+
     res.status(200).json({
       message: "Application retrieved successfully",
       application: application,
     });
   } catch (err) {
     console.error("Error fetching applications", err);
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
 
@@ -37,7 +44,7 @@ exports.getAllApplication = async (req, res) => {
     });
   } catch (err) {
     console.error("Error fetching applications", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -50,8 +57,10 @@ exports.updateApplication = async (req, res) => {
       returning: true,
     });
 
-    if (!(application === 1)) {
-      throw new Error(`Application with id:${id} not found`);
+    if (application !== 1) {
+      const error = new Error(`No application found with ID: ${id}`);
+      error.statusCode = 404;
+      throw error;
     }
 
     const result = await Application.findByPk(application.id);
@@ -62,17 +71,29 @@ exports.updateApplication = async (req, res) => {
     });
   } catch (err) {
     console.error("Error updating your application", err);
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
 
 exports.deleteApplication = async (req, res) => {
+  const id = req.params.id;
   try {
     // validate the email here...
-    await Application.destroy({ where: { id: req.params.id } });
+    const result = await Application.destroy({ where: { id: id } });
+
+    if (result !== 1) {
+      const error = new Error(`No application found with ID: ${id}`);
+      error.statusCode = 404;
+      throw error;
+    }
+
     res.status(200).json({ message: "Application deleted successfully" });
   } catch (err) {
     console.error("Error updating your application", err);
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
+
+// --- middlewares ---
+exports.validateEmail = (req, res, email) => {};
+
