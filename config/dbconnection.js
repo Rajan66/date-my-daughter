@@ -1,19 +1,15 @@
 const { Sequelize } = require("sequelize");
 
-// create a sequelize instance
-// add more..
+// create a sequelize instance,
+// this instance is used to define Models in our express app,
+// then we use the models to query the database
 const sequelize = new Sequelize({
   dialect: "sqlite",
   storage: "./database.sqlite",
 });
 
 const connection = () => {
-  // connect to the sqlite database
-  sequelize
-    .sync({ alter: true })
-    .then(() => console.log("Tables synced..."))
-    .catch((err) => console.error("Error while syncing tables", err));
-
+  // test the database connection, if it connects display success msg, else show error
   sequelize
     .authenticate() // TODO add comment here
     .then(() => {
