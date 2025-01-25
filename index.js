@@ -4,6 +4,7 @@ const cors = require("cors"); // to enable cross origin resource sharing
 const express = require("express");
 const { connection } = require("./config/dbconnection");
 const applicationRoute = require("./routes/application");
+const emailRoute = require("./routes/valid_email");
 
 const app = express();
 
@@ -21,6 +22,7 @@ connection();
 const apiPrefix = "/api";
 
 app.use(apiPrefix, applicationRoute);
+app.use(apiPrefix, emailRoute);
 
 const port = process.env.PORT || 8080; // use the port from .env or use a default port
 
