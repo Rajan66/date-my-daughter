@@ -1,16 +1,17 @@
 const Application = require("../models/application");
+const ValidEmail = require("../models/valid_email");
 
 exports.createApplication = async (req, res) => {
   try {
-    // validate the email here...
     const application = await Application.create(req.body);
+
     res.status(201).json({
       message: "Application created successfully",
       application: application,
     });
   } catch (err) {
     console.error("Error creating your application", err);
-    res.status(500).json({ message: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
 
@@ -94,6 +95,19 @@ exports.deleteApplication = async (req, res) => {
   }
 };
 
-// --- middlewares ---
-exports.validateEmail = (req, res, email) => {};
-
+// --- middleware ---
+exports.validateEmail = async (req, res, next) => {
+  const email = req.body.user;
+  try {
+    const foundEmail = await ValidEmail.findOne({ where: { email: email } });
+    if (foundEmail === null) {
+      const error = new Error("You dont have the permissions");
+      error.statusCode = 401;
+      throw error;
+    }
+    next();
+  } catch (err) {
+    console.error("Error authenticating the email", err);
+    res.status(err.statusCode || 500).json({ message: err.message });
+  }
+};

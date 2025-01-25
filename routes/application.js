@@ -7,14 +7,15 @@ const {
   getApplication,
   updateApplication,
   deleteApplication,
+  validateEmail,
 } = require("../controllers/application");
 
-router.post("/application", createApplication);
+router.post("/application", validateEmail, createApplication);
 
-router.get("/application/:id", getApplication);
-router.get("/application", getAllApplication);
+router.get("/application/:id", validateEmail, getApplication);
+router.get("/application", validateEmail, getAllApplication);
 
-router.put("/application/:id", updateApplication);
-router.delete("/application/:id", deleteApplication);
+router.put("/application/:id", validateEmail, updateApplication);
+router.delete("/application/:id", validateEmail, deleteApplication);
 
 module.exports = router;

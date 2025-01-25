@@ -2,10 +2,10 @@ require("dotenv").config();
 const ValidEmail = require("../models/valid_email");
 
 exports.addEmail = async (req, res) => {
-  const adminEmail = req.body.adminEmail;
+  const user = req.body.user;
   try {
     // wait for the check, if it returns true, proceed, else catch and display the error
-    await checkAdmin(adminEmail);
+    await checkAdmin(user);
 
     console.log(req.body.email)
     const email = await ValidEmail.create(req.body);
@@ -17,14 +17,14 @@ exports.addEmail = async (req, res) => {
     });
   } catch (err) {
     console.error("Error creating your email", err);
-    res.status(500).json({ message: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
 
 exports.getEmail = async (req, res) => {
   const email = req.body.email;
   try {
-    const validEmail = await Email.findOne({ where: { email: email } });
+    const validEmail = await ValidEmail.findOne({ where: { email: email } });
 
     if (!validEmail) {
       const error = new Error(`${email} not found`);
@@ -37,7 +37,7 @@ exports.getEmail = async (req, res) => {
       email: validEmail,
     });
   } catch (err) {
-    console.error("Error fetching applications", err);
+    console.error("Error fetching email", err);
     res.status(error.statusCode || 500).json({ message: err.message });
   }
 };
