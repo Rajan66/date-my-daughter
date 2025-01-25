@@ -1,8 +1,14 @@
+require("dotenv").config(); // to use variables from env file
+
 const cors = require("cors"); // to enable cross origin resource sharing
 const express = require("express");
 const { connection } = require("./config/dbconnection");
+const applicationRoute = require("./routes/application");
+const emailRoute = require("./routes/valid_email");
+
 const app = express();
-require("dotenv").config(); // to use variables from env file
+
+app.use(cors()); // enable cors so that client can access the server's resources
 
 /**
  * express.json(): a middleware to parse incoming JSON to JS object,
@@ -10,7 +16,13 @@ require("dotenv").config(); // to use variables from env file
  * without this, we would need to manually parse the json
  */
 app.use(express.json()); // to use json
+
 connection();
+
+const apiPrefix = "/api";
+
+app.use(apiPrefix, applicationRoute);
+app.use(apiPrefix, emailRoute);
 
 const port = process.env.PORT || 8080; // use the port from .env or use a default port
 
