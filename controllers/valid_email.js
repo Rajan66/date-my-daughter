@@ -22,12 +22,12 @@ exports.addEmail = async (req, res) => {
 };
 
 exports.getEmail = async (req, res) => {
-  const email = req.body.email;
+  const id = req.params.id;
   try {
-    const validEmail = await ValidEmail.findOne({ where: { email: email } });
+    const validEmail = await ValidEmail.findOne({ where: { id: id } });
 
     if (!validEmail) {
-      const error = new Error(`${email} not found`);
+      const error = new Error(`${id} not found`);
       error.statusCode = 404;
       throw error;
     }
@@ -38,7 +38,7 @@ exports.getEmail = async (req, res) => {
     });
   } catch (err) {
     console.error("Error fetching email", err);
-    res.status(error.statusCode || 500).json({ message: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message });
   }
 };
 
@@ -58,35 +58,33 @@ exports.getAllEmail = async (req, res) => {
 exports.updateEmail = async (req, res) => {
   const id = req.params.id;
   try {
-    // validate the email here...
-    const application = await Email.update(req.body, {
+    const email = await ValidEmail.update(req.body, {
       where: { id: id },
       returning: true,
     });
 
-    if (!(application === 1)) {
+    if (email !== 1) {
       throw new Error(`Email with id:${id} not found`);
     }
 
-    const result = await Email.findByPk(application.id);
+    const result = await ValidEmail.findByPk(email.id);
 
     res.status(200).json({
       message: "Email updated successfully",
       application: result,
     });
   } catch (err) {
-    console.error("Error updating your application", err);
+    console.error("Error updating your email", err);
     res.status(500).json({ message: err.message });
   }
 };
 
 exports.deleteEmail = async (req, res) => {
   try {
-    // validate the email here...
-    await Email.destroy({ where: { id: req.params.id } });
+    await ValidEmail.destroy({ where: { id: req.params.id } });
     res.status(200).json({ message: "Email deleted successfully" });
   } catch (err) {
-    console.error("Error updating your application", err);
+    console.error("Error updating your email", err);
     res.status(500).json({ message: err.message });
   }
 };
