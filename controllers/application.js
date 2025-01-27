@@ -1,10 +1,14 @@
 const Application = require("../models/application");
 const ValidEmail = require("../models/valid_email");
 
+// NOTE: every controller requires email validation
+
+// Creates an application
 exports.createApplication = async (req, res) => {
   try {
     const application = await Application.create(req.body);
 
+    // sends a 201 created http status code
     res.status(201).json({
       message: "Application created successfully",
       application: application,
@@ -15,17 +19,20 @@ exports.createApplication = async (req, res) => {
   }
 };
 
+// returns one application
 exports.getApplication = async (req, res) => {
   const id = req.params.id;
   try {
     const application = await Application.findByPk(id);
 
+    // return 404 bad request if application doesn't exist
     if (!application) {
       const error = new Error(`No application found with ID: ${id}`);
       error.statusCode = 404;
-      throw error;
+      throw error; // throws an error, for the catch block to handle it
     }
 
+    // returns the response and 200 OK code
     res.status(200).json({
       message: "Application retrieved successfully",
       application: application,
@@ -36,6 +43,7 @@ exports.getApplication = async (req, res) => {
   }
 };
 
+// returns all the applications in the database
 exports.getAllApplication = async (req, res) => {
   try {
     const applications = await Application.findAll();
@@ -49,21 +57,24 @@ exports.getAllApplication = async (req, res) => {
   }
 };
 
+// updates the application
 exports.updateApplication = async (req, res) => {
   const id = req.params.id;
   try {
-    // validate the email here...
+    // send the body to update and the where condition
     const application = await Application.update(req.body, {
       where: { id: id },
-      returning: true,
+      returning: true, // returns boolean value, true if update is successfully, else false
     });
 
+    // application contains either 0 or 1 i.e true or false
     if (application !== 1) {
       const error = new Error(`No application found with ID: ${id}`);
       error.statusCode = 404;
       throw error;
     }
 
+    // find the updated application if updation is succesfully
     const result = await Application.findByPk(application.id);
 
     res.status(200).json({
@@ -76,12 +87,13 @@ exports.updateApplication = async (req, res) => {
   }
 };
 
+/// delete an application
 exports.deleteApplication = async (req, res) => {
   const id = req.params.id;
   try {
-    // validate the email here...
     const result = await Application.destroy({ where: { id: id } });
 
+    // result contains 0 or 1, i.e. true or false.
     if (result !== 1) {
       const error = new Error(`No application found with ID: ${id}`);
       error.statusCode = 404;
@@ -97,14 +109,19 @@ exports.deleteApplication = async (req, res) => {
 
 // --- middleware ---
 exports.validateEmail = async (req, res, next) => {
+  // user contains the valid_email
   const email = req.body.user;
   try {
+    // check if the user exists in the valid_emails table
     const foundEmail = await ValidEmail.findOne({ where: { email: email } });
+    
+    // if it returns null, then throw a 401 unauthorized error
     if (foundEmail === null) {
       const error = new Error("You dont have the permissions");
       error.statusCode = 401;
       throw error;
     }
+    // send the control to the next controller
     next();
   } catch (err) {
     console.error("Error authenticating the email", err);
