@@ -110,8 +110,10 @@ exports.deleteApplication = async (req, res) => {
 // --- middleware ---
 exports.validateEmail = async (req, res, next) => {
   // user contains the valid_email
-  const email = req.body.user;
+  // const email = req.body.user;
+  const email = req.headers["user-email"];
   try {
+    console.log(req.body)
     // check if the user exists in the valid_emails table
     const foundEmail = await ValidEmail.findOne({ where: { email: email } });
     
