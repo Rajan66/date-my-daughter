@@ -2,14 +2,9 @@ require("dotenv").config();
 const ValidEmail = require("../models/valid_email");
 
 exports.addEmail = async (req, res) => {
-  const user = req.body.user;
   try {
-    // wait for the check, if it returns true, proceed, else catch and display the error
-    await checkAdmin(user);
-
-    console.log(req.body.email)
     const email = await ValidEmail.create(req.body);
-    console.log(email)
+    console.log(email);
 
     res.status(201).json({
       message: "Email created successfully",
@@ -63,7 +58,8 @@ exports.updateEmail = async (req, res) => {
       returning: true,
     });
 
-    if (email !== 1) {
+    console.log(email)
+    if (email[0] !== 1) {
       throw new Error(`Email with id:${id} not found`);
     }
 
@@ -89,12 +85,18 @@ exports.deleteEmail = async (req, res) => {
   }
 };
 
-// --- helper functions ---
-const checkAdmin = async (email) => {
-  if (email !== process.env.ADMIN_EMAIL) {
-    const err = new Error("You don't have the permissions");
-    err.statusCode = 401;
-    throw err;
+// --- middlewares ---
+exports.checkAdmin = async (req, res, next) => {
+  const email = req.headers["user-email"];
+  try {
+    if (email !== process.env.ADMIN_EMAIL) {
+      const err = new Error("You don't have the permissions");
+      err.statusCode = 401;
+      throw err;
+    }
+    next();
+  } catch (error) {
+    console.error("Error checking for admin", err);
+    res.status(err.statusCode || 500).json({ message: err.message });
   }
-  return true;
 };

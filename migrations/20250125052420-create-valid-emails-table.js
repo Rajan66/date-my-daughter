@@ -16,14 +16,14 @@ module.exports = {
         allowNull: false,
       },
       createdAt: {
-        type: Sequelize.NOW,
+        type: Sequelize.DATE,
         allowNull: false,
-        default: Sequelize.NOW,
+        defaultValue: Sequelize.fn("NOW"),
       },
       updatedAt: {
-        type: Sequelize.NOW,
+        type: Sequelize.DATE,
         allowNull: false,
-        default: Sequelize.NOW,
+        defaultValue: Sequelize.fn("NOW"),
       },
     });
   },

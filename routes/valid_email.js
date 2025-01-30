@@ -7,14 +7,15 @@ const {
   getEmail,
   updateEmail,
   deleteEmail,
+  checkAdmin,
 } = require("../controllers/valid_email");
 
-router.post("/add/email", addEmail);
+router.post("/add/email", checkAdmin, addEmail);
 
-router.get("/email/:id", getEmail);
-router.get("/email", getAllEmail);
+router.get("/email/:id", checkAdmin, getEmail);
+router.get("/email", checkAdmin, getAllEmail);
 
-router.put("/email/:id", updateEmail);
-router.delete("/email/:id", deleteEmail);
+router.put("/email/:id", checkAdmin, updateEmail);
+router.delete("/email/:id", checkAdmin, deleteEmail);
 
 module.exports = router;
