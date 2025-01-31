@@ -6,6 +6,7 @@ const ValidEmail = require("../models/valid_email");
 // Creates an application
 exports.createApplication = async (req, res) => {
   try {
+    console.log(req.body)
     const application = await Application.create(req.body);
 
     // sends a 201 created http status code

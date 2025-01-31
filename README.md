@@ -4,7 +4,7 @@
 
 ### 1. Created an API
 - Implemented models, controllers and routes to create an `application` API.
-- Configured and migrated `SQLite` database using `sequelize`.
+- Configured and migrated `PostgreSQL` database using `sequelize`.
 ### 2. Authentication
 - Implemented user authentication through email using `x-headers`.
 - Created `Valid_email` table to store list of `valid_emails`.

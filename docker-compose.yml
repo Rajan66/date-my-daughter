@@ -1,6 +1,7 @@
 services:
   postgresdb:
     image: postgres:15  # Use a specific version for stability
+    restart: unless-stopped
     env_file: .env
     environment:
       POSTGRES_USER: $DB_USERNAME
@@ -17,6 +18,7 @@ services:
     build: 
       context: .
       dockerfile: ./Dockerfile
+    restart: unless-stopped
     env_file: .env
     ports:
       - "${PORT}:${PORT}"
