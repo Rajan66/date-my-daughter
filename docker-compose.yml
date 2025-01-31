@@ -1,32 +1,35 @@
-version: '3.8'
-
 services:
   postgresdb:
-    image: postgres
-    restart: unless-stopped
-    env_file: ./.env
+    image: postgres:15  # Use a specific version for stability
+    env_file: .env
     environment:
-      - POSTGRES_USER=$DB_USERNAME
-      - POSTGRES_PASSWORD=$DB_PASSWORD
-      - POSTGRES_DB=$DB_NAME
+      POSTGRES_USER: $DB_USERNAME
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_DB: $DB_NAME
     ports:
-      - $DB_PORT:$DB_PORT
+      - "${DB_PORT}:${DB_PORT}"
     volumes:
-      - db:/var/lib/postgres
+      - db:/var/lib/postgresql/data
+
   app:
     depends_on:
       - postgresdb
-    build: ./app
-    restart: unless-stopped
-    env_file: ./.env
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    env_file: .env
     ports:
-      - $PORT:$PORT
+      - "${PORT}:${PORT}"
     environment:
-      - DB_HOST=postgresdb
-      - DB_USER=$DB_USERNAME
-      - DB_PASSWORD=$DB_PASSWORD
-      - DB_NAME=$DB_NAME
-      - DB_PORT=$DB_PORT
+      DB_HOST: postgresdb
+      DB_USER: $DB_USERNAME
+      DB_PASSWORD: $DB_PASSWORD
+      DB_NAME: $DB_NAME
+      DB_PORT: $DB_PORT
+    volumes:
+      - .:/app
+    command: >
+        sh -c "npx sequelize-cli db:migrate && node index.js"
 
-volumes: 
+volumes:
   db:

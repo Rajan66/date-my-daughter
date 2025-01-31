@@ -57,17 +57,16 @@ exports.updateEmail = async (req, res) => {
       where: { id: id },
       returning: true,
     });
-
-    console.log(email)
+    // add duplicate email error message
     if (email[0] !== 1) {
       throw new Error(`Email with id:${id} not found`);
     }
 
-    const result = await ValidEmail.findByPk(email.id);
+    const result = await ValidEmail.findByPk(req.params.id);
 
     res.status(200).json({
       message: "Email updated successfully",
-      application: result,
+      email: result,
     });
   } catch (err) {
     console.error("Error updating your email", err);

@@ -68,14 +68,14 @@ exports.updateApplication = async (req, res) => {
     });
 
     // application contains either 0 or 1 i.e true or false
-    if (application !== 1) {
+    if (application[0] !== 1) {
       const error = new Error(`No application found with ID: ${id}`);
       error.statusCode = 404;
       throw error;
     }
 
     // find the updated application if updation is succesfully
-    const result = await Application.findByPk(application.id);
+    const result = await Application.findByPk(req.params.id);
 
     res.status(200).json({
       message: "Application updated successfully",
