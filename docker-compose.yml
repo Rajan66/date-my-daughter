@@ -10,15 +10,15 @@ services:
     ports:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
-      - db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data # create a volume for storing database datas
 
   app:
     depends_on:
       - postgresdb
     build: 
-      context: .
-      dockerfile: ./Dockerfile
-    restart: unless-stopped
+      context: . # Use the current dir during build
+      dockerfile: ./Dockerfile # Help find the dockerfile
+    restart: unless-stopped # Sync changes instantly without re-running the container
     env_file: .env
     ports:
       - "${PORT}:${PORT}"
@@ -29,7 +29,8 @@ services:
       DB_NAME: $DB_NAME
       DB_PORT: $DB_PORT
     volumes:
-      - .:/app
+      - .:/app # Mount the entire datemydaughter dir to /app
+      - /app/node_modules # Keep docker container's node_modules, creates a named volume for node_modules
     command: >
         sh -c "npx sequelize-cli db:migrate && node index.js"
 
